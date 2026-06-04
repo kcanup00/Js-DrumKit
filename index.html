@@ -55,46 +55,44 @@
     <audio data-key="76" src="sounds/tink.wav"></audio>
 
     <script>
-      function playsound(e) {
-        const audio = document.querySelector(`audio[data-key="${e.keyCode}"]`);
-        const key = document.querySelec;
-        tor(`.key[data-key="${e.keyCode}"]`);
-        if (!audio) return;
+    function playSound(keyCode) {
+  const audio = document.querySelector(`audio[data-key="${keyCode}"]`);
+  const key = document.querySelector(`.key[data-key="${keyCode}"]`);
 
-        audio.currentTime = 0;
-        audio.play();
-        key.classList.add("playing");
-      }
+  if (!audio) return;
 
-      function removeTransition(e) {
-        if (e.propertyName !== "transform") return;
-        e.target.classList.remove("playing");
-      }
+  audio.currentTime = 0;
+  audio.play();
 
-      const keys = document.querySelectorAll(".key");
-      keys.forEach((key) =>
-        key.addEventListener("transitionend", removeTransition),
-      );
-      window.addEventListener("keydown", playsound);
+  key.classList.add("playing")
+      
+  if ("vibrate" in navigator) {
+    navigator.vibrate(50); 
+  }
+}
 
-      keys.forEach((key) => {
-        key.addEventListener("click", () => {
-          const audio = document.querySelector(
-            `audio[data-key="${key.dataset.key}"]`,
-          );
+// Keyboard support
+window.addEventListener("keydown", (e) => {
+  playSound(e.keyCode);
+});
 
-          if (!audio) return;
+// Touch / click support
+const keys = document.querySelectorAll(".key");
 
-          audio.currentTime = 0;
-          audio.play();
+keys.forEach(key => {
+  key.addEventListener("click", () => {
+    const keyCode = key.getAttribute("data-key");
+    playSound(keyCode);
+  });
+});
 
-          key.classList.add("playing");
+// Remove animation
+function removeTransition(e) {
+  if (e.propertyName !== "transform") return;
+  this.classList.remove("playing");
+}
 
-          setTimeout(() => {
-            key.classList.remove("playing");
-          }, 100);
-        });
-      });
+keys.forEach(key => key.addEventListener("transitionend", removeTransition));
     </script>
   </body>
 </html>
